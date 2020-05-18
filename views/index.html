@@ -1,0 +1,30 @@
+{{define "head"}}
+    <style>
+        .hello{ color: red;}
+        hr{ border: 1px #ccc dashed;}
+    </style>
+{{end}}
+
+
+{{define "content"}}
+    {{range .SuccessMsg}}
+    <div class="alert alert-success alert-dismissible">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    {{.}}
+    </div>
+    {{end}}
+    {{range .DangerMsg}}
+    <div class="alert alert-danger alert-dismissible">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{.}}</div>
+    {{end}}
+    {{range .InfoMsg}}
+    <div class="alert alert-info alert-dismissible">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{.}}</div>
+    {{end}}
+    <h1 class="hello">This is content!!!!</h1>
+    <hr>
+    <p><a href="/page">Page render</a></p>
+    <script type="text/javascript">
+      alert("hy from golang templates")
+    </script>
+{{end}}

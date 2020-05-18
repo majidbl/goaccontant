@@ -13,7 +13,7 @@ func CreateUser(user *model.User) (bool, error) {
 		return false, nil
 	}
 	var errs []error
-	errs, unique := uniqueCheck(user.MemberNumber)
+	errs, unique := UniqueCheck(user.Email)
 
 	//fmt.Println("uniqueCheck Answer is ", unique)
 	if unique {
@@ -29,19 +29,28 @@ func CreateUser(user *model.User) (bool, error) {
 }
 
 // GetUser return specific user
-func GetUser(mn string) model.User {
+func GetUser(field, value string) (model.User, error) {
+  var user model.User
 	db, err := model.GetDB()
 	if err != nil {
-		panic(err)
+		return user, err
 	}
 	var users []model.User
-	db.Where("member_number = ?", mn).First(&users)
-	fmt.Println(len(users))
-	for _, user := range users {
-		fmt.Println(user.Name)
-
+	q := fmt.Sprintf("%s = ?", field)
+	db.Where(q, value).First(&users)
+	//fmt.Println(len(users))
+	//for _, user := range users {
+	//	fmt.Println(user.Name)
+	//}
+	//TODO: IF USER DID NOT FIND
+	if len(users) < 1{
+	  errors := db.Where(q, value).First(&user).GetErrors()
+	  if len(errors) > 0 {
+	    return user, errors[0]
+	  }
+	  
 	}
-	return users[0]
+	return users[0], nil
 }
 
 //GetAllUser get full users
@@ -55,18 +64,17 @@ func GetAllUser() ([]model.User, error) {
 	return users, nil
 }
 
-func uniqueCheck(mn string) ([]error, bool) {
+func UniqueCheck(mn string) ([]error, bool) {
 	db, _ := model.GetDB()
 	var user []model.User
-	errors := db.Where("member_number = ?", mn).First(&user).GetErrors()
-	if len(errors) > 0 {
-		return errors, false
-	}
 
 	var users []model.User
-	db.Where("member_number = ?", mn).First(&users)
+	db.Where("email = ?", mn).First(&users)
+	errors := db.Where("email = ?", mn).First(&user).GetErrors()
 	if len(users) > 0 {
-		return nil, false
+		return errors, false
 	}
-	return nil, true
+	//fmt.Println(users[0])
+	//fmt.Println(len(users))
+	return errors, true
 }

@@ -47,15 +47,36 @@ func InitDB() error {
 	if err != nil {
 		return err
 	}
-	// Check model `User`'s table exists or not
-	tableExist := db.HasTable(&User{})
+	// Check model `User`'s and Cash table exists or not
+	userTableExist := db.HasTable(&User{})
+	cashTableExist := db.HasTable(&Cash{})
 
-	if tableExist {
-		return nil
+	if !userTableExist {
+	  db.CreateTable(&User{})
+	  fmt.Println("User Table Created Successfully!!!!!")
+	}else{
+	  fmt.Println("User Table not Created because is Exist!!!!!")
+	}
+	if !cashTableExist {
+	  db.CreateTable(&Cash{})
+	  fmt.Println("Cash Table Created Successfully!!!!!")
+	}else{
+	  fmt.Println("Cash Table not created because is Exist!!!!!")
 	}
 
-	db.CreateTable(&User{})
 	defer db.Close()
-	fmt.Println("Table Created Successfully!!!!!")
 	return nil
 }
+
+/*func CreateUser(user &User)(bool, error){
+  db, err := GetDB()
+  if err != nil {
+    return false, err
+  }
+  if err := db.Where("member_number = ?", user.MemberNumber).First(&user).Error; gorm.IsRecordNotFoundError(err) {
+  // record not found
+  db.Create(user)
+  return true, nil
+  } 
+  return false, err
+}*/

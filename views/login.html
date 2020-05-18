@@ -1,0 +1,46 @@
+{{define "head"}}
+<style>
+  .hello {
+    color: red;
+  }
+  hr {
+    border: 1px #ccc dashed;
+  }
+</style>
+{{end}}
+
+
+
+{{define "content"}}
+{{range .SuccessMsg}}
+    <div class="alert alert-success alert-dismissible">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    {{.}}
+    </div>
+    {{end}}
+    {{range .DangerMsg}}
+    <div class="alert alert-danger alert-dismissible">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{.}}</div>
+    {{end}}
+    {{range .InfoMsg}}
+    <div class="alert alert-info alert-dismissible">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{.}}</div>
+    {{end}}
+<div class="container">
+  <form action="/login" method="post">
+    <div class="form-group">
+      <label for="email">Email address</label>
+      <input type="email" name="email" class="form-control" id="email"  aria-describedby="emailHelp">
+      <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+    </div>
+    
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" name="password" id="password">
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+{{end}}
