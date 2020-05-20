@@ -12,6 +12,7 @@ import (
 	"goaccontant/controller"
 	"goaccontant/util"
 	"reflect"
+	"strconv"
 	
 )
 
@@ -292,9 +293,33 @@ func getUserCash(ctx *gin.Context){
   //defaultClime, err := util.ParseJSONWebTokenClaims(cookie, &customClime)
   util.ParseJSONWebTokenClaims(cookie, &customClime)
   cashs, _ := controller.GetCash("user_user_name",customClime.Name)
+  var amountIncome float64
+  var amountSpend float64
+  amountSpend = 0.0
+  amountIncome = 0.0
+  for _, record := range cashs {
+    if record.TypeCash == "spend" {
+      rmcomma, _ := util.RemoveComma(record.Amount)
+      ras , _ := strconv.ParseFloat(rmcomma,4)
+      amountSpend = amountSpend + float64(ras)
+    }
+    if record.TypeCash == "income" {
+      rmcomma, _ := util.RemoveComma(record.Amount)
+      rai, _ := strconv.ParseFloat(rmcomma,4)
+      amountIncome = amountIncome + float64(rai)
+      
+    }
+  }
+    amountIncomeaddc, _, _ := util.FormatAmount(strconv.FormatFloat(amountIncome,'f',4,64))
+    amountSpendaddc, _, _ := util.FormatAmount(strconv.FormatFloat(amountSpend,'f',4,64))
+    walletf := amountIncome - amountSpend
+    wallet, _, _ := util.FormatAmount(strconv.FormatFloat(walletf,'f',4,64))
   fmt.Println("cash registered for majid zare" , customClime.Name, cashs)
   ctx.HTML(http.StatusOK, "cash", gin.H{
     "cashs": cashs,
+    "AmountSpend":amountSpendaddc,
+    "AmountIncome":amountIncomeaddc,
+    "Wallet":wallet,
     "DangerMsg":dangermsg,
     "InfoMsg":infomsg,
     "SuccessMsg":successmsg,

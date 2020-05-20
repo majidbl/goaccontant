@@ -87,3 +87,13 @@ func FormatAmount(sr string)(string,bool,bool){
   
   return sr,false,false
 }
+
+func RemoveComma (s string)(string,error){
+  var output = ""
+  for _, c := range s {
+	        if unicode.IsDigit(c) || c == '.'{
+	          output = output + string(c)
+	        }
+  }
+  return output, nil
+}

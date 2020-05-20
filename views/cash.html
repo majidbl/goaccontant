@@ -20,6 +20,32 @@
       <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{.}}</div>
     {{end}}
     <div class="container">
+      <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title"> Amount Spend Money</h5>
+    <p class="card-text">
+        {{ .AmountIncome }} (rial)
+    </p>
+  </div>
+</div>
+      <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title"> Amount Spend Money</h5>
+    <p class="card-text">
+    
+      {{ .AmountSpend }} (rial)
+    </p>
+  </div>
+</div>
+      <div class="card text-white bg-info mb-3" style="max-width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title"> Amount Wallet Money</h5>
+    <p class="card-text">
+    
+      {{ .Wallet }} (rial)
+    </p>
+  </div>
+</div>
     <table
     data-toggle="table"
     data-search="true"
