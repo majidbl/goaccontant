@@ -13,7 +13,16 @@ import (
 // Dbcheck for test mysql connetion work or not
 func Dbcheck() error {
 
-	db, err := gorm.Open("mysql", "majid72bl:5080075066@(localhost)/goaccontant?charset=utf8mb4&parseTime=True&loc=Local")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	dbUser := os.Getenv("db_user")
+	dbPassword := os.Getenv("db_pass")
+	dbName := os.Getenv("db_name")
+	//dbHost := os.Getenv("db_host")
+	dbDriver := os.Getenv("db_driver")
+	db, err := gorm.Open(dbDriver, dbUser+":"+dbPassword+"@/"+dbName+"?charset=utf8mb4&parseTime=True")
 	if err != nil {
 
 		err := db.Close()
