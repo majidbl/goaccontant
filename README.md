@@ -9,7 +9,7 @@ go run main.go
 
 - [x] Register user to database.
 - [x] Add Spend and Income money to database.
-- [x] Remove Spend and Income money to database.
-- [x] Using JWT Authentication for login User.
-- [ ] Edit Spend and Income money to database.
+- [x] Remove Spend and Income money from database.
+- [x] Using JWT Authentication for User login.
+- [ ] Edit Spend and Income money in database by user.
 
