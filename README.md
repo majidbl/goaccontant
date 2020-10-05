@@ -13,5 +13,3 @@ go run main.go
 - [x] Using JWT Authentication for User login.
 - [ ] Edit Spend and Income money in database by user.
 
-## Notice
-There is a few problem that I will fix them as soon as possible

@@ -44,6 +44,8 @@ func NewServer(){
 	router.GET("/usercash", authMiddelware, getUserCash)
 	router.POST("/usercash", authMiddelware, postUserCash)
 	router.GET("/delete/:id", authMiddelware, deleteCash)
+	router.GET("/logout", authMiddelware, logout)
+	
 	router.Run(":4321")
 	
 }
@@ -62,10 +64,7 @@ func getIndex(ctx *gin.Context){
   //fmt.Println(session)
 		//render with master
 		ctx.HTML(http.StatusOK, "index", gin.H{
-			"title": "Index title!",
-			"add": func(a int, b int) int {
-				return a + b
-			},
+			
 			"SuccessMsg": successmsg,
 			"DangerMsg": dangermsg,
 			"InfoMsg": infomsg,
@@ -82,22 +81,16 @@ func getRegister(ctx *gin.Context){
 
 func getLogin(ctx *gin.Context){
   session := sessions.Default(ctx)
-  //session.Set("name","majid")
   successmsg := session.Flashes("success")
   dangermsg := session.Flashes("danger")
   infomsg := session.Flashes("info")
-  fmt.Println("info session added",session.Flashes("info"))
   session.Delete("success")
   session.Delete("danger")
   session.Delete("info")
   session.Save()
-  //fmt.Println(session)
+ 
 		//render with master
 		ctx.HTML(http.StatusOK, "login", gin.H{
-			"title": "Index title!",
-			"add": func(a int, b int) int {
-				return a + b
-			},
 			"SuccessMsg": successmsg,
 			"DangerMsg": dangermsg,
 			"InfoMsg": infomsg,
@@ -115,39 +108,37 @@ func postLogin(ctx *gin.Context){
 		email := ctx.PostForm("email")
 		password := ctx.PostForm("password")
 	  session := sessions.Default(ctx)
-		//fmt.Println("email get from form:. ",email)
-		//fmt.Println("password get from form:  ",password)
 		user, errg := controller.GetUser("email", email)
 		session.Delete("info")
 		session.Delete("danger")
 		session.Delete("success")
 		if errg != nil {
-		  panic(errg)
+		  fmt.Println(errg)
 		  session.AddFlash("User with this Email Not exist","danger")
 		  session.AddFlash("Please Register to access This Page ", "info")
 		  ctx.Redirect(http.StatusFound, "/")
-		  }
+		  
+		}
 		  //fmt.Println(user)
-		if email == "majidzarephysics@gmail.com" && password == "123456" {
+		  //TODO : Check if user exist create JWT token else Redirect to home Page
+		  
+		if user.Password == password{
 		    //fmt.Println("check user exist")
 		    cl := Clim{Email:email, Name: user.UserName ,Role:user.Role, Authorized: true}
 		    token, errt := util.GenerateJWTSigned(&cl)
 		    if errt != nil {
-		      panic(errt)
+		      fmt.Println(errt)
 		      
 		    }
 		    //fmt.Println("token GenerateJWTSigned",  token)
 		    ctx.SetCookie("gin_cookie", token, 60*60*24, "/", "localhost", false, true)
-		    session.Set("Role", user.Role)
-		    session.Set(fmt.Sprintf("Authenticated_%s", user.UserName), "true")
-		    session.Set("username", user.UserName)
 		    session.AddFlash("You are logged successfully","success")
 		    session.Save()
 		    ctx.Redirect(http.StatusFound, "/")//gin.H{"MsgsSuccess":session.Flashes("success"),}
 		    
 		  }else{
 		    session.AddFlash("This User Does not Privilege To login", "info")
-		    ctx.Redirect(http.StatusOK, "/")
+		    ctx.Redirect(http.StatusFound, "/")
 		    
 		  }
 		}
@@ -166,19 +157,16 @@ func postRegister(ctx *gin.Context){
 		_, u := controller.UniqueCheck(email)
 		fmt.Println(u)
 		if !u {
-		  controller.CreateUser(&user)
 		  session.AddFlash("User With This Email Registered Before","danger")
 		  session.AddFlash("User Creating going failed","danger")
 		  session.Save()
 		  ctx.Redirect(http.StatusFound, "/")//gin.H{"MsgsDanger":session.Flashes("danger"),})
 		} else{
-		//fmt.Println(created)
-		session.AddFlash("User Created Successfully ","success")
-		session.Save()
-		ctx.Redirect(http.StatusFound, "/")
+		  controller.CreateUser(&user)
+		  session.AddFlash("User Created Successfully ","success")
+		  session.Save()
+		  ctx.Redirect(http.StatusFound, "/")
 		}
-		//fmt.Println(session.Flashes("success"))
-		//.Println(session.Flashes("danger"))
 }
 
 func getPage(ctx *gin.Context){
@@ -199,7 +187,6 @@ func getPage(ctx *gin.Context){
     session.Delete("danger")
     session.Delete("info")
     session.Save()
-    //fmt.Println(session)
 		//render with master
 		ctx.HTML(http.StatusOK, "page.html", gin.H{
 			"title": "Index title!",
@@ -242,9 +229,14 @@ func getCashUser(ctx *gin.Context){
 
 
 }
-func loguot(ctx *gin.Context){
+func logout(ctx *gin.Context){
   session := sessions.Default(ctx)
   session.Clear()
+  //session.Delete("info")
+	//session.Delete("danger")
+	//session.Delete("success")
+	//session.Clear()
+	ctx.SetCookie("gin_cookie", "Delete", -1, "/", "localhost", false, true)
   ctx.Redirect(http.StatusFound, "/")
 }
 func authMiddelware(ctx *gin.Context){
@@ -266,13 +258,6 @@ func authMiddelware(ctx *gin.Context){
     ctx.Redirect(http.StatusFound, "login")
   }
   fmt.Println(defaultClime)
-  /*var customClime Clim
-  defaultClime, err := util.ParseJSONWebTokenClaims(cookie, &customClime)
-	session.Save()
-  fmt.Println(err)
-  fmt.Println(customClime)
-  fmt.Println(defaultClime)*/
-  //fmt.Printf("Cookie value: %s \n", cookie)
   fmt.Println(reflect.TypeOf(cookie))
   //ctx.Next()
 }
@@ -282,7 +267,7 @@ func getUserCash(ctx *gin.Context){
   var customClime Clim
   util.ParseJSONWebTokenClaims(cookie, &customClime)
   session := sessions.Default(ctx)
-  session.Set("name","majid")
+  session.Set("name",customClime.Name)
   successmsg := session.Flashes("success")
   dangermsg := session.Flashes("danger")
   infomsg := session.Flashes("info")
@@ -292,6 +277,7 @@ func getUserCash(ctx *gin.Context){
   session.Save()
   //defaultClime, err := util.ParseJSONWebTokenClaims(cookie, &customClime)
   util.ParseJSONWebTokenClaims(cookie, &customClime)
+  fmt.Println("getUserCash",customClime)
   cashs, _ := controller.GetCash("user_user_name",customClime.Name)
   var amountIncome float64
   var amountSpend float64
@@ -314,7 +300,6 @@ func getUserCash(ctx *gin.Context){
     amountSpendaddc, _, _ := util.FormatAmount(strconv.FormatFloat(amountSpend,'f',4,64))
     walletf := amountIncome - amountSpend
     wallet, _, _ := util.FormatAmount(strconv.FormatFloat(walletf,'f',4,64))
-  fmt.Println("cash registered for majid zare" , customClime.Name, cashs)
   ctx.HTML(http.StatusOK, "cash", gin.H{
     "cashs": cashs,
     "AmountSpend":amountSpendaddc,
@@ -324,7 +309,6 @@ func getUserCash(ctx *gin.Context){
     "InfoMsg":infomsg,
     "SuccessMsg":successmsg,
   })
-  //fmt.Printf("Cookie value: %s \n", cookie)
   
 }
 
@@ -333,13 +317,13 @@ func postUserCash(ctx *gin.Context){
   amount := ctx.PostForm("amount")
 	typeCash := ctx.PostForm("typecash")
   var customClime Clim
-  //defaultClime, err := util.ParseJSONWebTokenClaims(cookie, &customClime)
   util.ParseJSONWebTokenClaims(cookie, &customClime)
   session := sessions.Default(ctx)
   session.Delete("success")
   session.Delete("danger")
   session.Delete("info")
   session.Save()
+  fmt.Println(customClime)
 	if !util.IsIntFloat(amount){
 	  session.AddFlash("Invalid value for Amount e.g 123456 or 1.25644", "danger")
     session.Save()
