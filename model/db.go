@@ -22,10 +22,9 @@ func Dbcheck() error {
 	dbName := os.Getenv("db_name")
 	//dbHost := os.Getenv("db_host")
 	dbDriver := os.Getenv("db_driver")
+
 	db, err := gorm.Open(dbDriver, dbUser+":"+dbPassword+"@/"+dbName+"?charset=utf8mb4&parseTime=True")
 	if err != nil {
-
-		err := db.Close()
 		return err
 	}
 	defer db.Close()
@@ -61,16 +60,16 @@ func InitDB() error {
 	cashTableExist := db.HasTable(&Cash{})
 
 	if !userTableExist {
-	  db.CreateTable(&User{})
-	  fmt.Println("User Table Created Successfully!!!!!")
-	}else{
-	  fmt.Println("User Table not Created because is Exist!!!!!")
+		db.CreateTable(&User{})
+		fmt.Println("User Table Created Successfully!!!!!")
+	} else {
+		fmt.Println("User Table not Created because is Exist!!!!!")
 	}
 	if !cashTableExist {
-	  db.CreateTable(&Cash{})
-	  fmt.Println("Cash Table Created Successfully!!!!!")
-	}else{
-	  fmt.Println("Cash Table not created because is Exist!!!!!")
+		db.CreateTable(&Cash{})
+		fmt.Println("Cash Table Created Successfully!!!!!")
+	} else {
+		fmt.Println("Cash Table not created because is Exist!!!!!")
 	}
 
 	defer db.Close()
@@ -86,6 +85,6 @@ func InitDB() error {
   // record not found
   db.Create(user)
   return true, nil
-  } 
+  }
   return false, err
 }*/
