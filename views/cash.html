@@ -1,93 +1,94 @@
 {{define "head"}}
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css">
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css">
 
 {{end}}
 
 
 {{define "content"}}
-    {{range .SuccessMsg}}
-    <div class="alert alert-success alert-dismissible">
-      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    {{.}}
+{{range .SuccessMsg}}
+<div class="alert alert-success alert-dismissible">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  {{.}}
+</div>
+{{end}}
+{{range .DangerMsg}}
+<div class="alert alert-danger alert-dismissible">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{.}}</div>
+{{end}}
+{{range .InfoMsg}}
+<div class="alert alert-info alert-dismissible">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{.}}</div>
+{{end}}
+<div class="container">
+
+  <div class="card-group">
+    <div class="card text-white bg-success mb-3 mx-2" style="max-width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title"> Amount Spend Money</h5>
+        <p class="card-text">
+          {{ .AmountIncome }} (rial)
+        </p>
+      </div>
     </div>
-    {{end}}
-    {{range .DangerMsg}}
-    <div class="alert alert-danger alert-dismissible">
-      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{.}}</div>
-    {{end}}
-    {{range .InfoMsg}}
-    <div class="alert alert-info alert-dismissible">
-      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{.}}</div>
-    {{end}}
-    <div class="container">
-      <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
-  <div class="card-body">
-    <h5 class="card-title"> Amount Spend Money</h5>
-    <p class="card-text">
-        {{ .AmountIncome }} (rial)
-    </p>
+    <div class="card text-white bg-danger mb-3 mx-2" style="max-width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title"> Amount Spend Money</h5>
+        <p class="card-text">
+
+          {{ .AmountSpend }} (rial)
+        </p>
+      </div>
+    </div>
+    <div class="card text-white bg-info mb-3 mx-2" style="max-width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title"> Amount Wallet Money</h5>
+        <p class="card-text">
+
+          {{ .Wallet }} (rial)
+        </p>
+      </div>
+    </div>
   </div>
-</div>
-      <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
-  <div class="card-body">
-    <h5 class="card-title"> Amount Spend Money</h5>
-    <p class="card-text">
-    
-      {{ .AmountSpend }} (rial)
-    </p>
-  </div>
-</div>
-      <div class="card text-white bg-info mb-3" style="max-width: 18rem;">
-  <div class="card-body">
-    <h5 class="card-title"> Amount Wallet Money</h5>
-    <p class="card-text">
-    
-      {{ .Wallet }} (rial)
-    </p>
-  </div>
-</div>
-    <table
-    data-toggle="table"
-    data-search="true"
-    data-show-columns="true"
-    class="table-bordered">
-      <thead class="thead-dark">
-        <tr>
-          <th class="p-2">ID</th>
-          <th class="p-2">Amount</th>
-          <th class="p-2">Type</th>
-          <th class="p-2">Owner</th>
-          <th class="p-2">Optios</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{range  .cashs }}
-    <tr id="tr-id-1" class="tr-class-1 {{ if ( eq .TypeCash "spend") }}  table-danger {{ else }} table-success {{ end }}" data-title="go accountant" >
-      <td id="td-id-1" class="td-class-1">
-        {{ .ID }}
-      </td>
-      <td class="p-2">{{ .Amount }}</td>
-      <td class="p-2"> {{ .TypeCash }}</td>
-      <td class="p-2"> {{ .UserUserName }}</td>
-      <td class="p-2"> <a href="/delete/{{ .ID }}"><i class="fa fa-trash-alt"></i></a></td>
-    </tr>
-    {{ end }}
-  </tbody>
-</table>
+  <table data-toggle="table" data-search="true" data-show-columns="true" class="table-bordered">
+    <thead class="thead-dark">
+      <tr>
+        <th class="p-2">ID</th>
+        <th class="p-2">Amount</th>
+        <th class="p-2">Type</th>
+        <th class="p-2">Owner</th>
+        <th class="p-2">Optios</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range  .cashs }}
+      <tr id="tr-id-1"
+        class="tr-class-1 {{ if ( eq .TypeCash "spend") }}  table-danger {{ else }} table-success {{ end }}"
+        data-title="go accountant">
+        <td id="td-id-1" class="td-class-1">
+          {{ .ID }}
+        </td>
+        <td class="p-2">{{ .Amount }}</td>
+        <td class="p-2"> {{ .TypeCash }}</td>
+        <td class="p-2"> {{ .UserUserName }}</td>
+        <td class="p-2"> <a href="/delete/{{ .ID }}"><i class="fa fa-trash-alt"></i></a></td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
 
   <form class="mt-3" method="post">
-  <div class="form-row">
-    <div class="col">
-      <input type="text" name="amount" class="form-control" onchange="numberWithCommas()" placeholder="Amount (rial)">
+    <div class="form-row">
+      <div class="col">
+        <input type="text" name="amount" class="form-control" onchange="numberWithCommas()" placeholder="Amount (rial)">
+      </div>
+      <div class="col">
+        <select id="inputState" name="typecash" class="form-control">
+          <option value="spend" selected>Spend</option>
+          <option value="income">Income</option>
+        </select>
+      </div>
     </div>
-    <div class="col">
-      <select id="inputState" name="typecash" class="form-control">
-        <option value="spend" selected >Spend</option>
-        <option value="income">Income</option>
-      </select>
-    </div>
-  </div>
-  <button class="btn btn-primary" type="submit">Add</button>
-</form>
+    <button class="btn btn-primary" type="submit">Add</button>
+  </form>
 </div>
 {{end}}
